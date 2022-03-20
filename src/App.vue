@@ -1,17 +1,50 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div style="padding-bottom:20px;">
+    <button v-on:click="sendRequest">Get MBI</button>
+    <div>{{ generateResponse }}</div>
+  </div>
+
+  <div>
+    <input v-model="mbi" placeholder="Enter MBI to Verify">
+    <button v-on:click="verifyMbi">Submit</button>
+    <div> {{ verifyResponse }} </div>
+  </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+  const axios = require("axios");
 
-export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  }
-}
+  export default {
+    name: 'App',
+    data: function () {
+      return {
+        generateResponse: null,
+        verifyResponse: null,
+        mbi: ""
+      };
+    },
+    beforeMount() {},
+    methods: {
+      sendRequest() {
+        this.getMBI("https://mbi-api-mga.herokuapp.com/generate");
+      },
+      async getMBI(url) {
+        axios
+            .get(url)
+            .then(response => {this.generateResponse = response.data.mbi})
+      },
+      verifyMbi() {
+        this.verifyMBI("https://mbi-api-mga.herokuapp.com/verify");
+      },
+      async verifyMBI(url) {
+        axios.post(url, {
+          mbi: this.mbi,
+        })
+        .then(response => {this.verifyResponse = response.data})
+
+      },
+    }
+  };
 </script>
 
 <style>
